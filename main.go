@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"slo19/frontend-masters-project/internal/app"
+	"slo19/frontend-masters-project/internal/routes"
 	"time"
 )
 
@@ -19,11 +20,11 @@ func main() {
 	}
 
 	app.Logger.Println("We are running our app on port ", port)
-
-	http.HandleFunc("/health", HealthCheck)
+	r := routes.SetupRoutes(app)
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
 		IdleTimeout:  time.Minute,
+		Handler:      r,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
@@ -32,8 +33,4 @@ func main() {
 	if err != nil {
 		app.Logger.Fatal(err)
 	}
-}
-
-func HealthCheck(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Status is available\n")
 }
