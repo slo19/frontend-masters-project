@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"slo19/frontend-masters-project/internal/app"
@@ -8,16 +9,20 @@ import (
 )
 
 func main() {
+	var port int
+	flag.IntVar(&port, "port", 8080, "backend server port")
+	flag.Parse()
+
 	app, err := app.NewApplication()
 	if err != nil {
 		panic(err)
 	}
 
-	app.Logger.Println("We are running our app")
+	app.Logger.Println("We are running our app on port ", port)
 
 	http.HandleFunc("/health", HealthCheck)
 	server := http.Server{
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf(":%d", port),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
